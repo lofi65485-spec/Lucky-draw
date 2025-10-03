@@ -4,19 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lucky Draw System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #4a90e2;
-            --secondary-color: #f39c12;
-            --accent-color: #e74c3c;
-            --background-color: #f5f7fa;
-            --text-color: #333;
-            --card-bg: #ffffff;
-            --snake-color-1: #ff6b6b;
-            --snake-color-2: #4ecdc4;
-            --snake-color-3: #45b7d1;
-            --snake-color-4: #96ceb4;
-            --snake-color-5: #feca57;
+            --primary: #8e44ad;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --text: #333;
+            --bg: #f9f9f9;
         }
 
         * {
@@ -27,11 +26,11 @@
         }
 
         body {
-            background-color: var(--background-color);
-            color: var(--text-color);
+            background-color: var(--bg);
+            color: var(--text);
             overflow-x: hidden;
-            position: relative;
             min-height: 100vh;
+            position: relative;
         }
 
         .snake-border {
@@ -43,42 +42,62 @@
             pointer-events: none;
             z-index: 1000;
             border: 15px solid transparent;
-            animation: snakeBorder 8s infinite linear;
+            animation: snakeBorder 10s infinite linear;
         }
 
         @keyframes snakeBorder {
-            0% { border-color: var(--snake-color-1) var(--snake-color-2) var(--snake-color-3) var(--snake-color-4); }
-            25% { border-color: var(--snake-color-2) var(--snake-color-3) var(--snake-color-4) var(--snake-color-5); }
-            50% { border-color: var(--snake-color-3) var(--snake-color-4) var(--snake-color-5) var(--snake-color-1); }
-            75% { border-color: var(--snake-color-4) var(--snake-color-5) var(--snake-color-1) var(--snake-color-2); }
-            100% { border-color: var(--snake-color-5) var(--snake-color-1) var(--snake-color-2) var(--snake-color-3); }
+            0% { border-color: #ff6b6b #4ecdc4 #45b7d1 #96ceb4; }
+            25% { border-color: #4ecdc4 #45b7d1 #96ceb4 #ff6b6b; }
+            50% { border-color: #45b7d1 #96ceb4 #ff6b6b #4ecdc4; }
+            75% { border-color: #96ceb4 #ff6b6b #4ecdc4 #45b7d1; }
+            100% { border-color: #ff6b6b #4ecdc4 #45b7d1 #96ceb4; }
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            padding: 20px;
+            padding: 25px;
             text-align: center;
-            border-radius: 10px;
+            border-radius: 15px;
             margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            animation: headerGlow 3s infinite alternate;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes headerGlow {
-            0% { box-shadow: 0 4px 15px rgba(74, 144, 226, 0.5); }
-            100% { box-shadow: 0 4px 25px rgba(243, 156, 18, 0.7); }
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
         }
 
         .nav-tabs {
@@ -86,32 +105,38 @@
             justify-content: center;
             flex-wrap: wrap;
             margin-bottom: 30px;
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            padding: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            background-color: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
         }
 
         .nav-tab {
-            padding: 12px 25px;
-            margin: 5px;
-            background-color: var(--primary-color);
+            padding: 14px 28px;
+            margin: 8px;
+            background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: bold;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(142, 68, 173, 0.3);
         }
 
         .nav-tab:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-3px);
+            background-color: var(--secondary);
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
         }
 
         .nav-tab.active {
-            background-color: var(--accent-color);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background-color: var(--accent);
+            box-shadow: 0 6px 15px rgba(231, 76, 60, 0.4);
         }
 
         .page {
@@ -129,16 +154,26 @@
         }
 
         .card {
-            background-color: var(--card-bg);
-            border-radius: 10px;
+            background-color: white;
+            border-radius: 15px;
             padding: 25px;
             margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .wheel-container {
@@ -149,19 +184,14 @@
         }
 
         .wheel {
-            width: 300px;
-            height: 300px;
+            width: 320px;
+            height: 320px;
             position: relative;
             border-radius: 50%;
             overflow: hidden;
             margin-bottom: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-            animation: wheelRotate 20s infinite linear;
-        }
-
-        @keyframes wheelRotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+            border: 8px solid white;
         }
 
         .wheel-section {
@@ -175,75 +205,127 @@
             color: white;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            font-size: 14px;
+            text-align: center;
+            padding: 10px;
         }
 
         .wheel-center {
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             background-color: white;
             border-radius: 50%;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 10;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .spin-btn {
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .spin-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .spin-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .countdown {
             text-align: center;
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin: 20px 0;
             font-weight: bold;
-            color: var(--accent-color);
+            color: var(--accent);
         }
 
         .countdown span {
             display: inline-block;
-            padding: 10px 15px;
-            background-color: var(--primary-color);
+            padding: 12px 18px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            border-radius: 5px;
-            margin: 0 5px;
-            animation: pulse 1s infinite;
+            border-radius: 10px;
+            margin: 0 8px;
+            animation: pulse 1.5s infinite;
+            min-width: 70px;
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(0,0,0,0.2); }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(231, 76, 60, 0.4); }
+            100% { transform: scale(1); box-shadow: 0 0 0 rgba(0,0,0,0.2); }
         }
 
         .top-holders {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
         }
 
         .holder-card {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 20px;
+            border-radius: 12px;
             text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
         }
 
         .holder-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
         }
 
         .holder-rank {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: bold;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .holder-name {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .holder-tokens {
+            font-size: 1.5rem;
+            font-weight: bold;
         }
 
         form {
             display: flex;
             flex-direction: column;
-            max-width: 500px;
+            max-width: 600px;
             margin: 0 auto;
         }
 
@@ -255,85 +337,149 @@
             display: block;
             margin-bottom: 8px;
             font-weight: bold;
+            color: var(--dark);
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
             font-size: 1rem;
-            transition: border 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         input:focus, select:focus, textarea:focus {
-            border-color: var(--primary-color);
+            border-color: var(--primary);
             outline: none;
-            box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+            box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.2);
         }
 
         .btn {
-            padding: 12px 25px;
-            background-color: var(--primary-color);
+            padding: 14px 28px;
+            background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 1rem;
             font-weight: bold;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn:hover {
-            background-color: var(--secondary-color);
+            background-color: var(--secondary);
             transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-secondary {
-            background-color: var(--secondary-color);
+        .btn-success {
+            background-color: var(--success);
         }
 
         .btn-danger {
-            background-color: var(--accent-color);
+            background-color: var(--accent);
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+        }
+
+        .payment-info {
+            background: linear-gradient(135deg, #1dd1a1, #10ac84);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-info h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .prizes-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .prize-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+            border-top: 5px solid var(--primary);
+        }
+
+        .prize-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .prize-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .prize-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--dark);
         }
 
         .table-container {
             overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
         }
 
         th, td {
-            padding: 12px 15px;
+            padding: 15px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         th {
-            background-color: var(--primary-color);
+            background-color: var(--primary);
             color: white;
+            font-weight: bold;
         }
 
         tr:hover {
-            background-color: rgba(0, 0, 0, 0.03);
+            background-color: #f5f5f5;
         }
 
         .status-pending {
-            color: #f39c12;
+            color: var(--warning);
             font-weight: bold;
         }
 
         .status-approved {
-            color: #27ae60;
+            color: var(--success);
             font-weight: bold;
         }
 
         .status-rejected {
-            color: #e74c3c;
+            color: var(--accent);
             font-weight: bold;
         }
 
@@ -342,10 +488,11 @@
         }
 
         .tokens-display {
-            font-size: 3rem;
-            color: var(--secondary-color);
+            font-size: 4rem;
+            color: var(--secondary);
             margin: 20px 0;
             animation: bounce 2s infinite;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         @keyframes bounce {
@@ -356,30 +503,40 @@
         .winner-card {
             background: linear-gradient(135deg, #feca57, #ff9ff3);
             color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 15px 0;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             animation: winnerGlow 2s infinite alternate;
         }
 
         @keyframes winnerGlow {
-            0% { box-shadow: 0 4px 15px rgba(254, 202, 87, 0.5); }
-            100% { box-shadow: 0 4px 25px rgba(255, 159, 243, 0.7); }
+            0% { box-shadow: 0 5px 15px rgba(254, 202, 87, 0.5); }
+            100% { box-shadow: 0 5px 25px rgba(255, 159, 243, 0.7); }
         }
 
         .winner-rank {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: bold;
             margin-bottom: 10px;
         }
 
+        .winner-name {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .winner-prize {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
         .no-tokens {
-            background-color: #e74c3c;
+            background-color: var(--accent);
             color: white;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 15px;
             text-align: center;
             margin: 20px 0;
             animation: shake 0.5s;
@@ -391,19 +548,62 @@
             20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
 
+        .admin-login {
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-section {
+            margin-bottom: 30px;
+        }
+
         footer {
             text-align: center;
-            padding: 20px;
+            padding: 25px;
             margin-top: 40px;
             color: #777;
-            border-top: 1px solid #ddd;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            z-index: 1001;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background-color: var(--success);
+        }
+
+        .notification.error {
+            background-color: var(--accent);
+        }
+
+        .notification.warning {
+            background-color: var(--warning);
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
             .wheel {
-                width: 250px;
-                height: 250px;
+                width: 280px;
+                height: 280px;
             }
             
             .nav-tabs {
@@ -413,6 +613,36 @@
             .nav-tab {
                 width: 100%;
                 margin: 5px 0;
+                justify-content: center;
+            }
+            
+            .countdown {
+                font-size: 1.8rem;
+            }
+            
+            .countdown span {
+                padding: 10px 14px;
+                margin: 0 5px;
+                min-width: 60px;
+            }
+            
+            .top-holders, .prizes-list {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .wheel {
+                width: 250px;
+                height: 250px;
             }
             
             .countdown {
@@ -422,6 +652,11 @@
             .countdown span {
                 padding: 8px 12px;
                 margin: 0 3px;
+                min-width: 50px;
+            }
+            
+            .card {
+                padding: 20px;
             }
         }
     </style>
@@ -431,22 +666,32 @@
     
     <div class="container">
         <header>
-            <h1>Lucky Draw System</h1>
-            <p>Spin the wheel and win amazing prizes!</p>
+            <h1><i class="fas fa-gift"></i> Lucky Draw System</h1>
+            <p class="subtitle">Spin the wheel and win amazing prizes!</p>
         </header>
         
         <div class="nav-tabs">
-            <button class="nav-tab active" data-page="home">Home</button>
-            <button class="nav-tab" data-page="participate">Participate</button>
-            <button class="nav-tab" data-page="admin">Admin Panel</button>
-            <button class="nav-tab" data-page="user">User Dashboard</button>
-            <button class="nav-tab" data-page="results">Results</button>
+            <button class="nav-tab active" data-page="home">
+                <i class="fas fa-home"></i> Home
+            </button>
+            <button class="nav-tab" data-page="participate">
+                <i class="fas fa-ticket-alt"></i> Participate
+            </button>
+            <button class="nav-tab" data-page="admin">
+                <i class="fas fa-user-shield"></i> Admin Panel
+            </button>
+            <button class="nav-tab" data-page="user">
+                <i class="fas fa-user"></i> User Dashboard
+            </button>
+            <button class="nav-tab" data-page="results">
+                <i class="fas fa-trophy"></i> Results
+            </button>
         </div>
         
         <!-- Home Page -->
         <div id="home" class="page active">
             <div class="card">
-                <h2>Welcome to Lucky Draw</h2>
+                <h2 class="card-title"><i class="fas fa-fire"></i> Welcome to Lucky Draw</h2>
                 <p>Participate in our exciting lucky draw for a chance to win amazing prizes. The draw will happen in:</p>
                 
                 <div class="countdown">
@@ -458,21 +703,17 @@
             </div>
             
             <div class="wheel-container">
-                <h2>Lucky Wheel</h2>
-                <div class="wheel">
-                    <div class="wheel-section" style="background-color: #ff6b6b; transform: rotate(0deg);">Prize 1</div>
-                    <div class="wheel-section" style="background-color: #4ecdc4; transform: rotate(60deg);">Prize 2</div>
-                    <div class="wheel-section" style="background-color: #45b7d1; transform: rotate(120deg);">Prize 3</div>
-                    <div class="wheel-section" style="background-color: #96ceb4; transform: rotate(180deg);">Prize 4</div>
-                    <div class="wheel-section" style="background-color: #feca57; transform: rotate(240deg);">Prize 5</div>
-                    <div class="wheel-section" style="background-color: #ff9ff3; transform: rotate(300deg);">Prize 6</div>
-                    <div class="wheel-center"></div>
+                <h2 class="card-title"><i class="fas fa-star"></i> Lucky Wheel</h2>
+                <div class="wheel" id="wheel">
+                    <!-- Wheel sections will be dynamically generated -->
                 </div>
-                <button class="btn">Spin Wheel (Demo)</button>
+                <button class="spin-btn" id="spin-btn">
+                    <i class="fas fa-sync-alt"></i> Spin Wheel
+                </button>
             </div>
             
             <div class="card">
-                <h2>Top 5 Token Holders</h2>
+                <h2 class="card-title"><i class="fas fa-crown"></i> Top 5 Token Holders</h2>
                 <div class="top-holders" id="top-holders">
                     <!-- Top holders will be loaded here -->
                 </div>
@@ -482,51 +723,100 @@
         <!-- Participate Page -->
         <div id="participate" class="page">
             <div class="card">
-                <h2>Participate in Lucky Draw</h2>
-                <p>Fill out the form below to participate in the lucky draw.</p>
+                <h2 class="card-title"><i class="fas fa-ticket-alt"></i> Participate in Lucky Draw</h2>
+                
+                <div class="payment-info">
+                    <h3><i class="fas fa-money-bill-wave"></i> Payment Information</h3>
+                    <p><strong>JazzCash Number:</strong> 03284994074</p>
+                    <p><strong>Account Name:</strong> Zaman Habib</p>
+                    <p>Please send payment and provide transaction details below</p>
+                </div>
+                
+                <div class="card">
+                    <h3 class="card-title"><i class="fas fa-gift"></i> Available Prizes</h3>
+                    <div class="prizes-list" id="prizes-list">
+                        <!-- Prizes will be loaded here -->
+                    </div>
+                </div>
                 
                 <form id="participate-form">
                     <div class="form-group">
-                        <label for="name">Full Name</label>
+                        <label for="name"><i class="fas fa-user"></i> Full Name</label>
                         <input type="text" id="name" name="name" required>
                     </div>
                     
                     <div class="form-group">
-                        <label for="phone">Phone Number</label>
+                        <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
                         <input type="tel" id="phone" name="phone" required>
                     </div>
                     
                     <div class="form-group">
-                        <label for="paymentId">Payment ID</label>
+                        <label for="paymentId"><i class="fas fa-receipt"></i> Payment Transaction ID</label>
                         <input type="text" id="paymentId" name="paymentId" required>
                     </div>
                     
-                    <button type="submit" class="btn">Submit Participation</button>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-paper-plane"></i> Submit Participation
+                    </button>
                 </form>
             </div>
         </div>
         
         <!-- Admin Panel -->
         <div id="admin" class="page">
-            <div class="card">
-                <h2>Admin Panel</h2>
-                <p>Approve or reject participation requests and manage tokens.</p>
+            <div class="card admin-login" id="admin-login">
+                <h2 class="card-title"><i class="fas fa-lock"></i> Admin Login</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="password"><i class="fas fa-key"></i> Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </form>
+            </div>
+            
+            <div class="admin-panel" id="admin-panel">
+                <h2 class="card-title"><i class="fas fa-user-shield"></i> Admin Panel</h2>
                 
-                <div class="table-container">
-                    <table id="participations-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Phone</th>
-                                <th>Payment ID</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="participations-body">
-                            <!-- Participations will be loaded here -->
-                        </tbody>
-                    </table>
+                <div class="admin-section">
+                    <h3 class="card-title"><i class="fas fa-users"></i> Participant Management</h3>
+                    <div class="table-container">
+                        <table id="participations-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Payment ID</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="participations-body">
+                                <!-- Participations will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="admin-section">
+                    <h3 class="card-title"><i class="fas fa-trophy"></i> Add Winner</h3>
+                    <form id="add-winner-form">
+                        <div class="form-group">
+                            <label for="winner-name"><i class="fas fa-user"></i> Winner Name</label>
+                            <input type="text" id="winner-name" name="winner-name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="winner-prize"><i class="fas fa-gift"></i> Prize Won</label>
+                            <input type="text" id="winner-prize" name="winner-prize" required>
+                        </div>
+                        
+                        <button type="submit" class="btn">
+                            <i class="fas fa-plus"></i> Add Winner
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -534,14 +824,16 @@
         <!-- User Dashboard -->
         <div id="user" class="page">
             <div class="card user-dashboard">
-                <h2>Your Dashboard</h2>
+                <h2 class="card-title"><i class="fas fa-user-circle"></i> Your Dashboard</h2>
                 
                 <div id="user-info">
                     <p>Enter your phone number to view your tokens and details.</p>
                     
                     <div class="form-group">
                         <input type="tel" id="user-phone" placeholder="Your Phone Number">
-                        <button class="btn" id="check-user">Check Details</button>
+                        <button class="btn" id="check-user">
+                            <i class="fas fa-search"></i> Check Details
+                        </button>
                     </div>
                 </div>
                 
@@ -554,9 +846,11 @@
                 </div>
                 
                 <div id="no-tokens" class="no-tokens" style="display: none;">
-                    <h3>No Tokens Found</h3>
+                    <h3><i class="fas fa-exclamation-triangle"></i> No Tokens Found</h3>
                     <p>Please participate in the lucky draw to get tokens.</p>
-                    <button class="btn" id="go-to-participate">Participate Now</button>
+                    <button class="btn" id="go-to-participate">
+                        <i class="fas fa-ticket-alt"></i> Participate Now
+                    </button>
                 </div>
             </div>
         </div>
@@ -564,7 +858,7 @@
         <!-- Results Page -->
         <div id="results" class="page">
             <div class="card">
-                <h2>Lucky Draw Winners</h2>
+                <h2 class="card-title"><i class="fas fa-trophy"></i> Lucky Draw Winners</h2>
                 <p>Congratulations to our lucky winners!</p>
                 
                 <div id="winners-list">
@@ -578,9 +872,10 @@
         </footer>
     </div>
 
-    <!-- Firebase App (core) -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <script>
@@ -606,9 +901,16 @@
         const countdownHours = document.getElementById('hours');
         const countdownMinutes = document.getElementById('minutes');
         const countdownSeconds = document.getElementById('seconds');
+        const wheel = document.getElementById('wheel');
+        const spinBtn = document.getElementById('spin-btn');
         const participateForm = document.getElementById('participate-form');
+        const prizesList = document.getElementById('prizes-list');
         const topHoldersContainer = document.getElementById('top-holders');
+        const adminLogin = document.getElementById('admin-login');
+        const adminPanel = document.getElementById('admin-panel');
+        const loginForm = document.getElementById('login-form');
         const participationsBody = document.getElementById('participations-body');
+        const addWinnerForm = document.getElementById('add-winner-form');
         const checkUserBtn = document.getElementById('check-user');
         const userDetails = document.getElementById('user-details');
         const noTokens = document.getElementById('no-tokens');
@@ -617,6 +919,7 @@
         const userStatus = document.getElementById('user-status');
         const goToParticipateBtn = document.getElementById('go-to-participate');
         const winnersList = document.getElementById('winners-list');
+        const notification = document.getElementById('notification');
 
         // Navigation
         navTabs.forEach(tab => {
@@ -637,6 +940,18 @@
                 
                 // Change snake border colors based on page
                 changeSnakeColors(targetPage);
+                
+                // Load data for specific pages
+                if (targetPage === 'home') {
+                    loadWheelPrizes();
+                    loadTopHolders();
+                } else if (targetPage === 'participate') {
+                    loadPrizesList();
+                } else if (targetPage === 'admin' && adminPanel.style.display === 'block') {
+                    loadParticipations();
+                } else if (targetPage === 'results') {
+                    loadWinners();
+                }
             });
         });
 
@@ -683,6 +998,16 @@
             }
         }
 
+        // Show notification
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
         // Countdown Timer (3 days)
         function updateCountdown() {
             const now = new Date().getTime();
@@ -704,6 +1029,95 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
+        // Wheel Functionality
+        function createWheel(prizes) {
+            wheel.innerHTML = '';
+            
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff', '#5f27cd'];
+            
+            prizes.forEach((prize, index) => {
+                const section = document.createElement('div');
+                section.className = 'wheel-section';
+                section.style.backgroundColor = colors[index % colors.length];
+                section.style.transform = `rotate(${index * (360 / prizes.length)}deg)`;
+                section.textContent = prize;
+                wheel.appendChild(section);
+            });
+            
+            const center = document.createElement('div');
+            center.className = 'wheel-center';
+            center.innerHTML = '<i class="fas fa-gift"></i>';
+            wheel.appendChild(center);
+        }
+
+        // Spin Wheel
+        spinBtn.addEventListener('click', () => {
+            const sections = document.querySelectorAll('.wheel-section');
+            if (sections.length === 0) return;
+            
+            // Disable button during spin
+            spinBtn.disabled = true;
+            
+            // Calculate random rotation
+            const extraDegrees = 360 * 5; // 5 full rotations
+            const randomDegree = Math.floor(Math.random() * 360);
+            const totalRotation = extraDegrees + randomDegree;
+            
+            // Apply rotation with animation
+            wheel.style.transition = 'transform 4s cubic-bezier(0.2, 0.8, 0.3, 1)';
+            wheel.style.transform = `rotate(${totalRotation}deg)`;
+            
+            // Determine winning section
+            setTimeout(() => {
+                const actualRotation = totalRotation % 360;
+                const sectionAngle = 360 / sections.length;
+                const winningIndex = Math.floor((360 - actualRotation) / sectionAngle) % sections.length;
+                
+                const winningPrize = sections[winningIndex].textContent;
+                showNotification(`Congratulations! You won: ${winningPrize}`, 'success');
+                
+                // Reset wheel and enable button
+                setTimeout(() => {
+                    wheel.style.transition = 'none';
+                    wheel.style.transform = 'rotate(0deg)';
+                    spinBtn.disabled = false;
+                }, 1000);
+            }, 4000);
+        });
+
+        // Load Wheel Prizes
+        function loadWheelPrizes() {
+            // In a real app, this would come from Firebase
+            const prizes = ['50 Rs', 'Laptop', 'Muree Trip', 'Shopping Voucher', 'Mobile Phone', 'Dinner for Two', 'Watch', 'Headphones'];
+            createWheel(prizes);
+        }
+
+        // Load Prizes List
+        function loadPrizesList() {
+            const prizes = [
+                { name: 'Grand Prize', icon: 'fa-trophy', description: 'Laptop + Muree Trip' },
+                { name: 'First Prize', icon: 'fa-medal', description: 'Smartphone + Shopping Voucher' },
+                { name: 'Second Prize', icon: 'fa-award', description: 'Watch + Dinner for Two' },
+                { name: 'Third Prize', icon: 'fa-star', description: 'Headphones + 50 Rs' },
+                { name: 'Consolation Prizes', icon: 'fa-gift', description: 'Multiple winners get 50 Rs each' }
+            ];
+            
+            prizesList.innerHTML = '';
+            
+            prizes.forEach(prize => {
+                const prizeCard = document.createElement('div');
+                prizeCard.className = 'prize-card';
+                prizeCard.innerHTML = `
+                    <div class="prize-icon">
+                        <i class="fas ${prize.icon}"></i>
+                    </div>
+                    <div class="prize-name">${prize.name}</div>
+                    <div class="prize-description">${prize.description}</div>
+                `;
+                prizesList.appendChild(prizeCard);
+            });
+        }
+
         // Participate Form Submission
         participateForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -713,20 +1127,21 @@
             const paymentId = document.getElementById('paymentId').value;
             
             // Add to Firestore
-            db.collection('participate').add({
+            db.collection('participants').add({
                 name: name,
                 phone: phone,
                 paymentId: paymentId,
                 status: 'pending',
+                tokens: 0,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             })
             .then(() => {
-                alert('Participation submitted successfully!');
+                showNotification('Participation submitted successfully! Please wait for admin approval.', 'success');
                 participateForm.reset();
             })
             .catch((error) => {
                 console.error('Error adding document: ', error);
-                alert('Error submitting participation. Please try again.');
+                showNotification('Error submitting participation. Please try again.', 'error');
             });
         });
 
@@ -747,7 +1162,9 @@
                 const holderCard = document.createElement('div');
                 holderCard.className = 'holder-card';
                 holderCard.innerHTML = `
-                    <div class="holder-rank">#${index + 1}</div>
+                    <div class="holder-rank">
+                        <i class="fas fa-crown"></i> #${index + 1}
+                    </div>
                     <div class="holder-name">${holder.name}</div>
                     <div class="holder-tokens">${holder.tokens} Tokens</div>
                 `;
@@ -755,9 +1172,25 @@
             });
         }
 
+        // Admin Login
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            
+            // Simple password check (in production, use Firebase Auth)
+            if (password === 'admin123') {
+                adminLogin.style.display = 'none';
+                adminPanel.style.display = 'block';
+                loadParticipations();
+                showNotification('Admin login successful!', 'success');
+            } else {
+                showNotification('Invalid password!', 'error');
+            }
+        });
+
         // Load Participations for Admin
         function loadParticipations() {
-            db.collection('participate').orderBy('timestamp', 'desc').get()
+            db.collection('participants').orderBy('timestamp', 'desc').get()
             .then((querySnapshot) => {
                 participationsBody.innerHTML = '';
                 
@@ -777,8 +1210,12 @@
                         <td class="status-${data.status}">${data.status}</td>
                         <td>
                             ${data.status === 'pending' ? 
-                                `<button class="btn btn-secondary" onclick="approveParticipation('${doc.id}')">Approve</button>
-                                 <button class="btn btn-danger" onclick="rejectParticipation('${doc.id}')">Reject</button>` : 
+                                `<button class="btn btn-success" onclick="approveParticipation('${doc.id}', '${data.phone}', '${data.name}')">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                 <button class="btn btn-danger" onclick="rejectParticipation('${doc.id}')">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>` : 
                                 '<button class="btn" disabled>Processed</button>'
                             }
                         </td>
@@ -789,65 +1226,82 @@
             })
             .catch((error) => {
                 console.error('Error getting documents: ', error);
+                showNotification('Error loading participations.', 'error');
             });
         }
 
         // Approve Participation
-        window.approveParticipation = function(docId) {
-            db.collection('participate').doc(docId).update({
-                status: 'approved'
+        window.approveParticipation = function(docId, phone, name) {
+            db.collection('participants').doc(docId).update({
+                status: 'approved',
+                tokens: 10 // Give 10 tokens on approval
             })
             .then(() => {
-                // Calculate tokens (example: 10 tokens per approval)
-                const tokens = 10;
-                
-                // Get the participation data
-                db.collection('participate').doc(docId).get()
-                .then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        
-                        // Add or update user in users collection
-                        db.collection('users').doc(data.phone).set({
-                            name: data.name,
-                            tokens: firebase.firestore.FieldValue.increment(tokens),
-                            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                        }, { merge: true })
-                        .then(() => {
-                            alert('Participation approved and tokens added!');
-                            loadParticipations();
-                        })
-                        .catch((error) => {
-                            console.error('Error updating user: ', error);
-                        });
-                    }
+                // Update or create user in users collection
+                db.collection('users').doc(phone).set({
+                    name: name,
+                    tokens: 10,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true })
+                .then(() => {
+                    showNotification('Participation approved and tokens added!', 'success');
+                    loadParticipations();
+                })
+                .catch((error) => {
+                    console.error('Error updating user: ', error);
+                    showNotification('Error updating user.', 'error');
                 });
             })
             .catch((error) => {
                 console.error('Error updating document: ', error);
+                showNotification('Error approving participation.', 'error');
             });
         };
 
         // Reject Participation
         window.rejectParticipation = function(docId) {
-            db.collection('participate').doc(docId).update({
+            db.collection('participants').doc(docId).update({
                 status: 'rejected'
             })
             .then(() => {
-                alert('Participation rejected!');
+                showNotification('Participation rejected!', 'success');
                 loadParticipations();
             })
             .catch((error) => {
                 console.error('Error updating document: ', error);
+                showNotification('Error rejecting participation.', 'error');
             });
         };
+
+        // Add Winner
+        addWinnerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const winnerName = document.getElementById('winner-name').value;
+            const winnerPrize = document.getElementById('winner-prize').value;
+            
+            db.collection('results').add({
+                name: winnerName,
+                prize: winnerPrize,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                showNotification('Winner added successfully!', 'success');
+                addWinnerForm.reset();
+                loadWinners();
+            })
+            .catch((error) => {
+                console.error('Error adding winner: ', error);
+                showNotification('Error adding winner. Please try again.', 'error');
+            });
+        });
 
         // Check User Details
         checkUserBtn.addEventListener('click', () => {
             const phone = document.getElementById('user-phone').value;
             
             if (!phone) {
-                alert('Please enter your phone number');
+                showNotification('Please enter your phone number', 'warning');
                 return;
             }
             
@@ -859,7 +1313,7 @@
                     userTokens.textContent = data.tokens;
                     
                     // Check participation status
-                    db.collection('participate')
+                    db.collection('participants')
                         .where('phone', '==', phone)
                         .orderBy('timestamp', 'desc')
                         .limit(1)
@@ -881,6 +1335,7 @@
             })
             .catch((error) => {
                 console.error('Error getting user: ', error);
+                showNotification('Error fetching user details.', 'error');
             });
         });
 
@@ -901,34 +1356,42 @@
 
         // Load Winners
         function loadWinners() {
-            // In a real app, this would query Firestore for winners
-            const winners = [
-                { name: 'John Doe', prize: 'Grand Prize - $1000', rank: 1 },
-                { name: 'Jane Smith', prize: 'Second Prize - $500', rank: 2 },
-                { name: 'Mike Johnson', prize: 'Third Prize - $250', rank: 3 },
-                { name: 'Sarah Williams', prize: 'Consolation Prize - $100', rank: 4 },
-                { name: 'David Brown', prize: 'Consolation Prize - $100', rank: 5 }
-            ];
-            
-            winnersList.innerHTML = '';
-            
-            winners.forEach(winner => {
-                const winnerCard = document.createElement('div');
-                winnerCard.className = 'winner-card';
-                winnerCard.innerHTML = `
-                    <div class="winner-rank">#${winner.rank}</div>
-                    <div class="winner-name">${winner.name}</div>
-                    <div class="winner-prize">${winner.prize}</div>
-                `;
-                winnersList.appendChild(winnerCard);
+            db.collection('results').orderBy('timestamp', 'desc').get()
+            .then((querySnapshot) => {
+                winnersList.innerHTML = '';
+                
+                if (querySnapshot.empty) {
+                    winnersList.innerHTML = '<p>No winners announced yet.</p>';
+                    return;
+                }
+                
+                let rank = 1;
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const winnerCard = document.createElement('div');
+                    winnerCard.className = 'winner-card';
+                    winnerCard.innerHTML = `
+                        <div class="winner-rank">#${rank}</div>
+                        <div class="winner-name">${data.name}</div>
+                        <div class="winner-prize">${data.prize}</div>
+                    `;
+                    winnersList.appendChild(winnerCard);
+                    rank++;
+                });
+            })
+            .catch((error) => {
+                console.error('Error getting winners: ', error);
+                showNotification('Error loading winners.', 'error');
             });
         }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            loadWheelPrizes();
+            loadPrizesList();
             loadTopHolders();
-            loadParticipations();
             loadWinners();
+            showNotification('Welcome to Lucky Draw System!', 'success');
         });
     </script>
 </body>
