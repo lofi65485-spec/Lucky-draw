@@ -1,456 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucky Draw - Home</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: white;
-        }
-
-        .container {
-            max-width: 640px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Snake Animation */
-        .snake-container {
-            height: 60px;
-            overflow: hidden;
-            position: relative;
-            margin-bottom: 30px;
-        }
-
-        .snake {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-
-        .snake-path {
-            stroke: rgba(255, 255, 255, 0.8);
-            stroke-width: 3;
-            fill: none;
-            stroke-dasharray: 10;
-            stroke-dashoffset: 0;
-            animation: snakeMove 3s linear infinite;
-        }
-
-        @keyframes snakeMove {
-            0% { stroke-dashoffset: 0; }
-            100% { stroke-dashoffset: -20; }
-        }
-
-        /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        /* Countdown */
-        .countdown {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .countdown h2 {
-            margin-bottom: 15px;
-            font-size: 1.4rem;
-        }
-
-        .countdown-timer {
-            font-size: 2rem;
-            font-weight: bold;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* Wheel Container */
-        .wheel-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            margin: 0 auto 30px;
-        }
-
-        .wheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            position: relative;
-            overflow: hidden;
-            transition: transform 4s cubic-bezier(0.17, 0.67, 0.83, 0.67);
-            transform: rotate(0deg);
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .wheel-segment {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            transform-origin: bottom right;
-            left: 0;
-            top: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        .wheel-segment-content {
-            transform: rotate(45deg);
-            text-align: center;
-        }
-
-        .wheel-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background: #ff6b6b;
-            border-radius: 50%;
-            z-index: 10;
-            box-shadow: 0 0 20px rgba(255, 107, 107, 0.7);
-        }
-
-        .wheel-pointer {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 40px;
-            background: #ff6b6b;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            z-index: 5;
-        }
-
-        .glow {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle, #ffd700, transparent);
-            border-radius: 50%;
-            filter: blur(5px);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        /* Leaderboard */
-        .leaderboard {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            border-radius: 15px;
-        }
-
-        .leaderboard h2 {
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 1.4rem;
-        }
-
-        .leaderboard-list {
-            list-style: none;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            transition: transform 0.2s;
-        }
-
-        .leaderboard-item:hover {
-            transform: translateX(5px);
-        }
-
-        .leaderboard-rank {
-            font-weight: bold;
-            font-size: 1.2rem;
-            min-width: 30px;
-        }
-
-        .leaderboard-initials {
-            flex: 1;
-            margin: 0 15px;
-            font-weight: bold;
-        }
-
-        .leaderboard-tokens {
-            background: #ffd700;
-            color: #333;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-weight: bold;
-        }
-
-        /* Navigation */
-        .nav-button {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background: #ff6b6b;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-top: 20px;
-            transition: all 0.3s;
-        }
-
-        .nav-button:hover {
-            background: #ff5252;
-            transform: translateY(-2px);
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .wheel-container {
-                width: 250px;
-                height: 250px;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lucky Draw - Home</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 50px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    p {
+      margin-bottom: 30px;
+      font-size: 1.2rem;
+    }
+    .nav-button {
+      display: inline-block;
+      padding: 15px 25px;
+      background: #4ecdc4;
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .nav-button:hover {
+      background: #3dbab1;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Snake Animation -->
-        <div class="snake-container">
-            <svg class="snake" viewBox="0 0 400 60">
-                <path class="snake-path" d="M0,30 Q100,0 200,30 T400,30" />
-            </svg>
-        </div>
+  <div class="container">
+    <h1>🎉 Welcome to Lucky Draw</h1>
+    <p>Participate in the draw and manage everything from the Admin Panel.</p>
 
-        <!-- Header -->
-        <div class="header">
-            <h1>🎉 Lucky Draw 🎉</h1>
-            <p>Spin to win amazing prizes!</p>
-        </div>
-
-        <!-- Countdown -->
-        <div class="countdown">
-            <h2>Next Draw In</h2>
-            <div class="countdown-timer" id="countdown">00:00:00</div>
-        </div>
-
-        <!-- Wheel -->
-        <div class="wheel-container">
-            <div class="wheel-pointer"></div>
-            <div class="wheel" id="wheel">
-                <!-- Wheel segments will be generated by JavaScript -->
-            </div>
-            <div class="wheel-center"></div>
-        </div>
-
-        <!-- Leaderboard -->
-        <div class="leaderboard">
-            <h2>🏆 Top Winners</h2>
-            <ul class="leaderboard-list" id="leaderboard">
-                <!-- Leaderboard items will be populated by JavaScript -->
-            </ul>
-        </div>
-
-        <!-- Navigation -->
-        <a href="Participate_Admin.html" class="nav-button">Participate & Admin</a>
-    </div>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    
-    <script>
-        // FIREBASE CONFIG - PASTED FROM USER
-        const firebaseConfig = {
-            apiKey: "AIzaSyC9XvQJohtUpZzgqunRgZngw5Akr2iNtGo",
-            authDomain: "lucky-web-78c4f.firebaseapp.com",
-            projectId: "lucky-web-78c4f",
-            storageBucket: "lucky-web-78c4f.firebasestorage.app",
-            messagingSenderId: "966619457091",
-            appId: "1:966619457091:web:203193897b81de6eadd6f6"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // Prize configuration
-        const prizes = [
-            { name: "iPhone", color: "#ff6b6b" },
-            { name: "15k Cash", color: "#4ecdc4" },
-            { name: "Laptop", color: "#45b7d1" },
-            { name: "Dinner 5★", color: "#96ceb4" },
-            { name: "30k Gift", color: "#feca57" }
-        ];
-
-        // Wheel animation
-        let wheelRotation = 0;
-        let wheelInterval;
-        let currentGlowIndex = 0;
-
-        function initializeWheel() {
-            const wheel = document.getElementById('wheel');
-            wheel.innerHTML = '';
-            
-            prizes.forEach((prize, index) => {
-                const segment = document.createElement('div');
-                segment.className = 'wheel-segment';
-                segment.style.backgroundColor = prize.color;
-                segment.style.transform = `rotate(${index * (360 / prizes.length)}deg)`;
-                
-                const content = document.createElement('div');
-                content.className = 'wheel-segment-content';
-                content.innerHTML = `
-                    <div style="font-size: 14px; margin-bottom: 5px;">${prize.name}</div>
-                    <div style="font-size: 20px;">🎁</div>
-                `;
-                
-                segment.appendChild(content);
-                wheel.appendChild(segment);
-
-                // Add glow element
-                const glow = document.createElement('div');
-                glow.className = 'glow';
-                glow.style.top = '10px';
-                glow.style.left = '50%';
-                glow.style.transform = 'translateX(-50%)';
-                segment.appendChild(glow);
-            });
-
-            startWheelAnimation();
-        }
-
-        function startWheelAnimation() {
-            const wheel = document.getElementById('wheel');
-            
-            wheelInterval = setInterval(() => {
-                wheelRotation += 0.5;
-                wheel.style.transform = `rotate(${wheelRotation}deg)`;
-                
-                // Update glow effect
-                const segments = document.querySelectorAll('.wheel-segment');
-                segments.forEach((segment, index) => {
-                    const glow = segment.querySelector('.glow');
-                    const segmentAngle = (index * (360 / prizes.length) + wheelRotation) % 360;
-                    const pointerAngle = 0; // Pointer is at top (0 degrees)
-                    const diff = Math.abs(segmentAngle - pointerAngle);
-                    
-                    if (diff < 10 || diff > 350) {
-                        glow.style.opacity = '1';
-                    } else {
-                        glow.style.opacity = '0';
-                    }
-                });
-            }, 50);
-        }
-
-        // Countdown timer
-        function updateCountdown() {
-            // Default to next day at 8 PM
-            const now = new Date();
-            const nextDraw = new Date();
-            nextDraw.setDate(now.getDate() + 1);
-            nextDraw.setHours(20, 0, 0, 0);
-            
-            const diff = nextDraw - now;
-            
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            document.getElementById('countdown').textContent = 
-                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        // Leaderboard
-        function updateLeaderboard() {
-            if (!db) return;
-
-            db.collection('participants')
-                .where('status', '==', 'approved')
-                .orderBy('tokens', 'desc')
-                .limit(5)
-                .onSnapshot(snapshot => {
-                    const leaderboard = document.getElementById('leaderboard');
-                    leaderboard.innerHTML = '';
-                    
-                    snapshot.forEach((doc, index) => {
-                        const data = doc.data();
-                        const item = document.createElement('li');
-                        item.className = 'leaderboard-item';
-                        
-                        const initials = data.name.split(' ').map(n => n[0]).join('').toUpperCase();
-                        
-                        item.innerHTML = `
-                            <div class="leaderboard-rank">#${index + 1}</div>
-                            <div class="leaderboard-initials">${initials}</div>
-                            <div class="leaderboard-tokens">${data.tokens} tokens</div>
-                        `;
-                        
-                        leaderboard.appendChild(item);
-                    });
-
-                    // Add placeholder if no winners
-                    if (snapshot.empty) {
-                        const item = document.createElement('li');
-                        item.className = 'leaderboard-item';
-                        item.innerHTML = '<div style="text-align: center; width: 100%;">No winners yet</div>';
-                        leaderboard.appendChild(item);
-                    }
-                }, error => {
-                    console.error('Leaderboard error:', error);
-                });
-        }
-
-        // Initialize everything when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeWheel();
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
-            updateLeaderboard();
-        });
-    </script>
+    <!-- ✅ Button direct participate_admin.html open karega -->
+    <a href="participate_admin.html" class="nav-button">Go to Participate & Admin</a>
+  </div>
 </body>
 </html>
