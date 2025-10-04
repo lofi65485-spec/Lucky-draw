@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Draw - Participate & Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Snake Animation */
+        .snake-container {
+            height: 40px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .snake {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .snake-path {
+            stroke: rgba(255, 255, 255, 0.8);
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 8;
+            stroke-dashoffset: 0;
+            animation: snakeMove 2s linear infinite;
+        }
+
+        @keyframes snakeMove {
+            0% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -16; }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: #ff6b6b;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: 2px solid #ff6b6b;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Payment Info */
+        .payment-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .payment-info h3 {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .payment-details {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        /* Participants List */
+        .participants-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .participant-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .participant-info h4 {
+            margin-bottom: 5px;
+        }
+
+        .participant-meta {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .participant-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-approve {
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .btn-reject {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .status-pending { color: #feca57; }
+        .status-approved { color: #4ecdc4; }
+        .status-rejected { color: #ff6b6b; }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Admin Auth */
+        .admin-auth {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .admin-auth input {
+            margin: 10px 0;
+        }
+
+        /* Navigation */
+        .nav-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #4ecdc4;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .nav-button:hover {
+            background: #3dbab1;
+            transform: translateY(-2px);
+        }
+
+        /* Messages */
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background: rgba(78, 205, 196, 0.3);
+            border: 1px solid #4ecdc4;
+        }
+
+        .message.error {
+            background: rgba(255, 107, 107, 0.3);
+            border: 1px solid #ff6b6b;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .participant-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .participant-actions {
+                margin-top: 10px;
+                width: 100%;
+            }
+            
+            .participant-actions .btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Snake Animation -->
+        <div class="snake-container">
+            <svg class="snake" viewBox="0 0 400 40">
+                <path class="snake-path" d="M0,20 Q100,5 200,20 T400,20" />
+            </svg>
+        </div>
+
+        <!-- Header -->
+        <div class="header" style="text-align: center; margin-bottom: 20px;">
+            <h1>🎯 Participate & Admin</h1>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('participate')">Participate</button>
+            <button class="tab" onclick="switchTab('admin')">Admin Panel</button>
+        </div>
+
+        <!-- Participate Tab -->
+        <div id="participate-tab" class="tab-content active">
+            <div class="payment-info">
+                <h3>💳 Payment Information</h3>
+                <div class="payment-details" id="payment-details">
+                    Loading payment details...
+                </div>
+            </div>
+
+            <form id="participate-form">
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount">Amount (PKR) *</label>
+                    <input type="number" id="amount" name="amount" min="250" step="250" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="txId">Transaction ID *</label>
+                    <input type="text" id="txId" name="txId" required placeholder="JazzCash Transaction ID">
+                </div>
+
+                <div class="form-group">
+                    <label>Tokens Earned</label>
+                    <div id="tokens-display" style="background: rgba(255,255,255,0.9); padding: 12px; border-radius: 8px; text-align: center; font-weight: bold;">
+                        0 tokens
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submit-btn">
+                    Submit Participation
+                </button>
+            </form>
+
+            <div id="form-message"></div>
+        </div>
+
+        <!-- Admin Tab -->
+        <div id="admin-tab" class="tab-content">
+            <div class="admin-auth" id="admin-auth">
+                <h3>🔒 Admin Authentication</h3>
+                <input type="password" id="admin-password" placeholder="Enter admin password" class="form-group" style="margin: 10px 0;">
+                <button onclick="authenticateAdmin()" class="submit-btn">Login</button>
+            </div>
+
+            <div id="admin-panel" style="display: none;">
+                <!-- Stats -->
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-tokens">0</div>
+                        <div class="stat-label">Total Tokens</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-revenue">0</div>
+                        <div class="stat-label">Total Revenue (PKR)</div>
+                    </div>
+                </div>
+
+                <!-- Settings -->
+                <div class="payment-info">
+                    <h3>⚙️ Payment Settings</h3>
+                    <div class="form-group">
+                        <label>JazzCash Number</label>
+                        <input type="text" id="jazzcash-number" placeholder="JazzCash Number">
+                    </div>
+                    <div class="form-group">
+                        <label>Owner Name</label>
+                        <input type="text" id="owner-name" placeholder="Owner Name">
+                    </div>
+                    <button onclick="updatePaymentSettings()" class="submit-btn">Update Settings</button>
+                </div>
+
+                <!-- Participants Management -->
+                <h3 style="margin: 20px 0 10px;">📋 Participants</h3>
+                <div class="participants-list" id="participants-list">
+                    Loading participants...
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <a href="Home.html" class="nav-button">Back to Home</a>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // FIREBASE CONFIG - PASTED FROM USER
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9XvQJohtUpZzgqunRgZngw5Akr2iNtGo",
+            authDomain: "lucky-web-78c4f.firebaseapp.com",
+            projectId: "lucky-web-78c4f",
+            storageBucket: "lucky-web-78c4f.firebasestorage.app",
+            messagingSenderId: "966619457091",
+            appId: "1:966619457091:web:203193897b81de6eadd6f6"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let isAdminAuthenticated = false;
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Activate selected tab
+            event.target.classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        // Calculate tokens based on amount
+        document.getElementById('amount').addEventListener('input', function() {
+            const amount = parseInt(this.value) || 0;
+            const tokens = Math.floor(amount / 250);
+            document.getElementById('tokens-display').textContent = `${tokens} tokens`;
+        });
+
+        // Form submission
+        document.getElementById('participate-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const messageDiv = document.getElementById('form-message');
+            
+            // Get form data
+            const formData = {
+                name: document.getElementById('name').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                amount: parseInt(document.getElementById('amount').value),
+                txId: document.getElementById('txId').value.trim(),
+                tokens: Math.floor(parseInt(document.getElementById('amount').value) / 250),
+                status: 'pending',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            // Validation
+            if (!formData.name || !formData.phone || !formData.amount || !formData.txId) {
+                showMessage('Please fill all required fields', 'error');
+                return;
+            }
+
+            if (formData.amount < 250) {
+                showMessage('Minimum amount is PKR 250', 'error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                await db.collection('participants').add(formData);
+                showMessage('Participation submitted successfully! We will verify your payment soon.', 'success');
+                document.getElementById('participate-form').reset();
+                document.getElementById('tokens-display').textContent = '0 tokens';
+            } catch (error) {
+                console.error('Error submitting:', error);
+                showMessage('Error submitting form. Please try again.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Participation';
+            }
+        });
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('form-message');
+            messageDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        // Load payment info
+        function loadPaymentInfo() {
+            if (!db) return;
+
+            db.collection('settings').doc('paymentInfo').onSnapshot(doc => {
+                const detailsDiv = document.getElementById('payment-details');
+                if (doc.exists) {
+                    const data = doc.data();
+                    detailsDiv.innerHTML = `
+                        <div style="font-size: 1.2rem; margin-bottom: 10px;">${data.ownerName || 'Owner'}</div>
+                        <div style="font-size: 1.1rem;">JazzCash: ${data.jazzcashNumber || 'Not set'}</div>
+                    `;
+                } else {
+                    detailsDiv.innerHTML = 'Payment details not configured';
+                }
+            });
+        }
+
+        // Admin authentication
+        function authenticateAdmin() {
+            const password = document.getElementById('admin-password').value;
+            
+            db.collection('settings').doc('paymentInfo').get().then(doc => {
+                if (doc.exists) {
+                    const settings = doc.data();
+                    // For now, using plain text comparison
+                    // In production, use proper hashing
+                    if (settings.adminPasswordHash === password) {
+                        isAdminAuthenticated = true;
+                        document.getElementById('admin-auth').style.display = 'none';
+                        document.getElementById('admin-panel').style.display = 'block';
+                        loadAdminPanel();
+                    } else {
+                        alert('Invalid password');
+                    }
+                } else {
+                    alert('Settings not found. Please configure admin password first.');
+                }
+            });
+        }
+
+        // Load admin panel data
+        function loadAdminPanel() {
+            if (!isAdminAuthenticated) return;
+
+            loadPaymentSettings();
+            loadParticipants();
+            loadStats();
+        }
+
+        // Load payment settings for admin
+        function loadPaymentSettings() {
+            db.collection('settings').doc('paymentInfo').get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('jazzcash-number').value = data.jazzcashNumber || '';
+                    document.getElementById('owner-name').value = data.ownerName || '';
+                }
+            });
+        }
+
+        // Update payment settings
+        function updatePaymentSettings() {
+            const updates = {
+                jazzcashNumber: document.getElementById('jazzcash-number').value,
+                ownerName: document.getElementById('owner-name').value
+            };
+
+            db.collection('settings').doc('paymentInfo').set(updates, { merge: true })
+                .then(() => alert('Settings updated successfully'))
+                .catch(error => alert('Error updating settings: ' + error));
+        }
+
+        // Load participants with realtime updates
+        function loadParticipants() {
+            db.collection('participants')
+                .orderBy('createdAt', 'desc')
+                .onSnapshot(snapshot => {
+                    const listDiv = document.getElementById('participants-list');
+                    listDiv.innerHTML = '';
+
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const item = document.createElement('div');
+                        item.className = 'participant-item';
+                        
+                        item.innerHTML = `
+                            <div class="participant-info">
+                                <h4>${data.name}</h4>
+                                <div class="participant-meta">
+                                    📞 ${data.phone} | 💰 PKR ${data.amount} | 🪙 ${data.tokens} tokens
+                                </div>
+                                <div class="participant-meta">
+                                    TX: ${data.txId} | 
+                                    <span class="status-${data.status}">${data.status.toUpperCase()}</span>
+                                </div>
+                            </div>
+                            <div class="participant-actions">
+                                ${data.status === 'pending' ? `
+                                    <button class="btn btn-approve" onclick="updateParticipantStatus('${doc.id}', 'approved')">
+                                        Approve
+                                    </button>
+                                    <button class="btn btn-reject" onclick="updateParticipantStatus('${doc.id}', 'rejected')">
+                                        Reject
+                                    </button>
+                                ` : ''}
+                            </div>
+                        `;
+                        
+                        listDiv.appendChild(item);
+                    });
+
+                    if (snapshot.empty) {
+                        listDiv.innerHTML = '<div class="participant-item">No participants found</div>';
+                    }
+                });
+        }
+
+        // Update participant status
+        function updateParticipantStatus(docId, status) {
+            db.collection('participants').doc(docId).update({
+                status: status
+            }).catch(error => {
+                console.error('Error updating status:', error);
+                alert('Error updating participant status');
+            });
+        }
+
+        // Load statistics
+        function loadStats() {
+            db.collection('participants')
+                .where('status', '==', 'approved')
+                .onSnapshot(snapshot => {
+                    let totalTokens = 0;
+                    let totalRevenue = 0;
+
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        totalTokens += data.tokens || 0;
+                        totalRevenue += data.amount || 0;
+                    });
+
+                    document.getElementById('total-tokens').textContent = totalTokens;
+                    document.getElementById('total-revenue').textContent = totalRevenue.toLocaleString();
+                });
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPaymentInfo();
+        });
+    </script>
+</body>
+</html>
