@@ -1,385 +1,440 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Lucky Draw - Participate & Admin</title>
-    <style>
-        /* (Same styles as before, kept concise for readability) */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh; padding: 20px; color: white;
-        }
-        .container { max-width: 640px; margin: 0 auto; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-        .snake-container { height: 40px; overflow: hidden; position: relative; margin-bottom: 20px; }
-        .snake-path { stroke: rgba(255,255,255,0.8); stroke-width: 2; fill: none; stroke-dasharray: 8; animation: snakeMove 2s linear infinite; }
-        @keyframes snakeMove { 0% { stroke-dashoffset: 0 } 100% { stroke-dashoffset: -16 } }
-        .tabs { display:flex; margin-bottom:20px; background: rgba(0,0,0,0.3); border-radius:10px; padding:5px; }
-        .tab { flex:1; padding:12px; text-align:center; background:transparent; border:none; color:white; font-size:1rem; font-weight:bold; border-radius:8px; cursor:pointer; transition:all .3s; }
-        .tab.active { background: #ff6b6b; }
-        .tab-content { display:none; }
-        .tab-content.active { display:block; }
-        .form-group { margin-bottom:20px; }
-        .form-group label { display:block; margin-bottom:8px; font-weight:bold; }
-        .form-group input, .form-group select { width:100%; padding:12px; border:none; border-radius:8px; background: rgba(255,255,255,0.9); font-size:1rem; }
-        .submit-btn { width:100%; padding:15px; background:#ff6b6b; color:white; border:none; border-radius:10px; font-size:1.1rem; font-weight:bold; cursor:pointer; transition:all .3s; }
-        .submit-btn:disabled { background:#ccc; cursor:not-allowed; transform:none; }
-        .payment-info { background: rgba(255,255,255,0.1); padding:20px; border-radius:10px; margin-bottom:20px; }
-        .participants-list { max-height:400px; overflow-y:auto; }
-        .participant-item { background: rgba(255,255,255,0.1); padding:15px; margin-bottom:10px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; }
-        .btn { padding:8px 15px; border:none; border-radius:5px; cursor:pointer; font-weight:bold; }
-        .btn-approve { background:#4ecdc4; color:white; }
-        .btn-reject { background:#ff6b6b; color:white; }
-        .status-pending { color:#feca57; } .status-approved { color:#4ecdc4; } .status-rejected { color:#ff6b6b; }
-        .stats { display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px; }
-        .stat-card { background: rgba(0,0,0,0.3); padding:15px; border-radius:10px; text-align:center; }
-        .message { padding:10px; margin:10px 0; border-radius:5px; text-align:center; font-weight:bold; }
-        .message.success { background: rgba(78,205,196,0.3); border:1px solid #4ecdc4; }
-        .message.error { background: rgba(255,107,107,0.3); border:1px solid #ff6b6b; }
-        .nav-button { display:block; width:100%; padding:15px; background:#4ecdc4; color:white; text-align:center; text-decoration:none; border-radius:10px; font-size:1.1rem; font-weight:bold; margin-top:20px; }
-        @media (max-width:480px) { .stats { grid-template-columns:1fr } .participant-item { flex-direction:column; align-items:flex-start } .participant-actions { margin-top:10px; width:100% } .participant-actions .btn { flex:1 } }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lucky Draw - Participate & Admin</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Tahoma, Geneva, Verdana, sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:20px;min-height:100vh}
+  .container{max-width:760px;margin:0 auto;background:rgba(255,255,255,0.08);padding:18px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.35)}
+  h1{text-align:center;margin-bottom:10px}
+  .tabs{display:flex;gap:8px;background:rgba(0,0,0,0.2);padding:6px;border-radius:10px;margin-bottom:12px}
+  .tab{flex:1;padding:10px;text-align:center;border-radius:8px;cursor:pointer;font-weight:700}
+  .tab.active{background:#ff6b6b}
+  .tab-content{display:none}
+  .tab-content.active{display:block}
+  form{margin-top:10px}
+  .form-group{margin-bottom:14px}
+  label{display:block;margin-bottom:6px;font-weight:700}
+  input[type="text"],input[type="tel"],input[type="number"],input[type="password"]{width:100%;padding:10px;border-radius:8px;border:none;background:#fff;color:#111}
+  .tokens-box{background:#fff;color:#111;padding:10px;border-radius:8px;font-weight:800;text-align:center}
+  .payment-info{background:rgba(255,255,255,0.07);padding:12px;border-radius:8px;margin-bottom:12px}
+  .note-box{background:rgba(255,255,255,0.06);padding:10px;border-radius:8px;margin-top:8px;color:#fff}
+  .participants-approved{background:rgba(0,0,0,0.2);padding:12px;border-radius:8px;margin-top:14px;max-height:260px;overflow:auto}
+  .approved-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px}
+  .badge{padding:6px 10px;border-radius:999px;font-weight:800}
+  .badge.verified{background:#4ecdc4;color:#033}
+  .btn{padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:800}
+  .btn-primary{background:#ff6b6b;color:#fff}
+  .btn-ghost{background:transparent;border:2px solid rgba(255,255,255,0.08);color:#fff}
+  .admin-tools{margin-top:14px;padding:10px;background:rgba(0,0,0,0.18);border-radius:8px}
+  .small{font-size:.9rem;opacity:.95}
+  .flex{display:flex;gap:8px;align-items:center}
+  @media(max-width:640px){.flex{flex-direction:column;align-items:stretch}}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="snake-container">
-            <svg class="snake" viewBox="0 0 400 40"><path class="snake-path" d="M0,20 Q100,5 200,20 T400,20" /></svg>
-        </div>
+  <div class="container">
+    <h1>🎯 Participate & Admin</h1>
 
-        <div class="header" style="text-align:center; margin-bottom:20px;">
-            <h1>🎯 Participate & Admin</h1>
-        </div>
-
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('participate', event)">Participate</button>
-            <button class="tab" onclick="switchTab('admin', event)">Admin Panel</button>
-        </div>
-
-        <!-- PARTICIPATE TAB -->
-        <div id="participate-tab" class="tab-content active">
-            <div class="payment-info">
-                <h3>💳 Payment Information</h3>
-                <div class="payment-details" id="payment-details">Loading payment details...</div>
-            </div>
-
-            <form id="participate-form">
-                <div class="form-group">
-                    <label for="name">Full Name *</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="phone">Phone Number *</label>
-                    <input type="tel" id="phone" name="phone" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="amount">Amount (PKR) *</label>
-                    <input type="number" id="amount" name="amount" min="250" step="250" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="txId">Transaction ID *</label>
-                    <input type="text" id="txId" name="txId" required placeholder="JazzCash Transaction ID">
-                </div>
-
-                <div class="form-group">
-                    <label>Tokens Earned</label>
-                    <div id="tokens-display" style="background: rgba(255,255,255,0.9); padding:12px; border-radius:8px; text-align:center; font-weight:bold;">0 tokens</div>
-                </div>
-
-                <button type="submit" class="submit-btn" id="submit-btn">Submit Participation</button>
-            </form>
-
-            <div id="form-message"></div>
-        </div>
-
-        <!-- ADMIN TAB -->
-        <div id="admin-tab" class="tab-content">
-            <div class="admin-auth" id="admin-auth">
-                <h3>🔒 Admin Authentication</h3>
-                <input type="password" id="admin-password" placeholder="Enter admin password" class="form-group" style="margin:10px 0;">
-                <button onclick="authenticateAdmin()" class="submit-btn">Login</button>
-            </div>
-
-            <div id="admin-panel" style="display:none;">
-                <div class="stats">
-                    <div class="stat-card">
-                        <div class="stat-value" id="total-tokens">0</div>
-                        <div class="stat-label">Total Tokens</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="total-revenue">0</div>
-                        <div class="stat-label">Total Revenue (PKR)</div>
-                    </div>
-                </div>
-
-                <div class="payment-info">
-                    <h3>⚙️ Payment Settings</h3>
-                    <div class="form-group"><label>JazzCash Number</label><input type="text" id="jazzcash-number" placeholder="JazzCash Number"></div>
-                    <div class="form-group"><label>Owner Name</label><input type="text" id="owner-name" placeholder="Owner Name"></div>
-                    <button onclick="updatePaymentSettings()" class="submit-btn">Update Settings</button>
-                </div>
-
-                <h3 style="margin:20px 0 10px;">📋 Participants</h3>
-                <div class="participants-list" id="participants-list">Loading participants...</div>
-            </div>
-        </div>
-
-        <a href="index.html" class="nav-button">Back to Home</a>
+    <div class="tabs" role="tablist">
+      <div class="tab active" data-target="participate-tab">Participate</div>
+      <div class="tab" data-target="admin-tab">Admin Panel</div>
     </div>
 
-    <!-- Firebase SDK (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <!-- PARTICIPATE -->
+    <div id="participate-tab" class="tab-content active">
+      <div class="payment-info">
+        <h3 class="small">💳 Payment Information (shown from admin settings)</h3>
+        <div id="payment-details" class="small">Loading payment details…</div>
+      </div>
 
-    <script>
-        // FIREBASE CONFIG - keep your config as provided
-        const firebaseConfig = {
-            apiKey: "AIzaSyC9XvQJohtUpZzgqunRgZngw5Akr2iNtGo",
-            authDomain: "lucky-web-78c4f.firebaseapp.com",
-            projectId: "lucky-web-78c4f",
-            storageBucket: "lucky-web-78c4f.firebasestorage.app",
-            messagingSenderId: "966619457091",
-            appId: "1:966619457091:web:203193897b81de6eadd6f6"
-        };
+      <form id="participate-form">
+        <div class="form-group"><label for="name">Full Name *</label><input id="name" type="text" required></div>
+        <div class="form-group"><label for="phone">Phone Number *</label><input id="phone" type="tel" required></div>
+        <div class="form-group"><label for="amount">Amount (PKR) *</label>
+          <input id="amount" type="number" min="250" step="250" required placeholder="250, 500, 1000, 2000">
+        </div>
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        <div class="form-group"><label for="txId">Transaction ID *</label><input id="txId" type="text" required placeholder="JazzCash Transaction ID"></div>
 
-        let isAdminAuthenticated = false;
+        <div class="form-group">
+          <label>Tokens Earned</label>
+          <div id="tokens-display" class="tokens-box">0 tokens</div>
+        </div>
 
-        // Safe tab switch (pass event from onclick)
-        function switchTab(tabName, ev) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        <button class="btn btn-primary" id="submit-btn" type="submit">Submit Participation</button>
+        <div id="form-message" style="margin-top:10px"></div>
+      </form>
 
-            if (ev && ev.target) ev.target.classList.add('active');
-            document.getElementById(`${tabName}-tab`).classList.add('active');
+      <div class="note-box small">
+        <strong>Important:</strong> Pay to the JazzCash number shown above, then enter the exact Transaction ID (TX ID). Please ensure your Transaction ID is correct — incorrect or fake IDs will not be accepted.
+      </div>
+
+      <!-- Approved members box -->
+      <div style="margin-top:16px">
+        <h3 style="margin-bottom:8px">✅ Recently Verified Participants</h3>
+        <div class="participants-approved" id="approved-list">
+          Loading verified participants...
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="admin-tab" class="tab-content">
+      <div class="admin-tools">
+        <div style="margin-bottom:8px">🔒 Admin Access</div>
+        <div class="flex" style="align-items:center">
+          <input id="admin-password" type="password" placeholder="Enter admin password" style="flex:1;padding:10px;border-radius:8px;border:none">
+          <button class="btn btn-ghost" id="admin-login-btn">Login</button>
+        </div>
+      </div>
+
+      <div id="admin-panel" style="display:none; margin-top:12px">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <div style="flex:1;min-width:150px;background:rgba(255,255,255,0.03);padding:10px;border-radius:8px">
+            <div class="small">Total Tokens</div>
+            <div id="total-tokens" style="font-weight:800;font-size:20px">0</div>
+          </div>
+          <div style="flex:1;min-width:150px;background:rgba(255,255,255,0.03);padding:10px;border-radius:8px">
+            <div class="small">Total Revenue (PKR)</div>
+            <div id="total-revenue" style="font-weight:800;font-size:20px">0</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="small">
+          <div style="margin-bottom:8px">⚙️ Payment Settings</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input id="jazzcash-number" placeholder="JazzCash Number" style="padding:8px;border-radius:8px;border:none;flex:1">
+            <input id="owner-name" placeholder="Owner Name" style="padding:8px;border-radius:8px;border:none;flex:1">
+            <button class="btn btn-primary" id="update-settings-btn">Update Settings</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h3 style="margin-bottom:8px">📋 Participants (admin view)</h3>
+          <div id="participants-list" style="max-height:240px;overflow:auto;background:rgba(0,0,0,0.12);padding:10px;border-radius:8px">Loading...</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h3 style="margin-bottom:8px">🔁 Admin Refresh (password protected)</h3>
+          <div class="flex">
+            <input id="refresh-password" type="password" placeholder="Enter admin password to enable" style="padding:8px;border-radius:8px;border:none;flex:1">
+            <button class="btn btn-primary" id="refresh-btn">Refresh Verified List</button>
+          </div>
+          <div class="small" style="margin-top:8px">After draw, press refresh to force reload verified participants.</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <a href="index.html" class="btn btn-ghost" style="text-decoration:none">⬅️ Back to Home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script>
+    // FIREBASE CONFIG (user-provided)
+    const firebaseConfig = {
+      apiKey: "AIzaSyC9XvQJohtUpZzgqunRgZngw5Akr2iNtGo",
+      authDomain: "lucky-web-78c4f.firebaseapp.com",
+      projectId: "lucky-web-78c4f",
+      storageBucket: "lucky-web-78c4f.firebasestorage.app",
+      messagingSenderId: "966619457091",
+      appId: "1:966619457091:web:203193897b81de6eadd6f6"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // state
+    let isAdminAuthenticated = false;
+    let cachedSettings = null;
+
+    // TAB switching (safe)
+    document.querySelectorAll('.tab').forEach(t=>{
+      t.addEventListener('click', (ev)=>{
+        document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+        ev.currentTarget.classList.add('active');
+        const target = ev.currentTarget.getAttribute('data-target');
+        document.getElementById(target).classList.add('active');
+      });
+    });
+
+    // Token mapping function (explicit mapping)
+    function calculateTokens(amount){
+      amount = Number(amount) || 0;
+      if(amount === 250) return 1;
+      if(amount === 500) return 2;
+      if(amount === 1000) return 4;
+      if(amount === 2000) return 8;
+      // fallback: floor by 250
+      return Math.floor(amount / 250);
+    }
+
+    // display tokens live
+    document.getElementById('amount').addEventListener('input', function(){
+      const tokens = calculateTokens(this.value);
+      document.getElementById('tokens-display').textContent = `${tokens} tokens`;
+    });
+
+    // PARTICIPATE form submit
+    document.getElementById('participate-form').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true; submitBtn.textContent = 'Submitting...';
+
+      const formData = {
+        name: document.getElementById('name').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        amount: Number(document.getElementById('amount').value) || 0,
+        txId: document.getElementById('txId').value.trim(),
+        tokens: calculateTokens(document.getElementById('amount').value),
+        status: 'pending',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      // validation
+      if(!formData.name || !formData.phone || !formData.amount || !formData.txId){
+        showFormMessage('Please fill all required fields','error');
+        submitBtn.disabled = false; submitBtn.textContent = 'Submit Participation';
+        return;
+      }
+      if(formData.amount < 250){
+        showFormMessage('Minimum amount is PKR 250','error');
+        submitBtn.disabled = false; submitBtn.textContent = 'Submit Participation';
+        return;
+      }
+
+      try{
+        await db.collection('participants').add(formData);
+        showFormMessage('Participation submitted. Keep your TX screenshot — verification will follow.','success');
+        document.getElementById('participate-form').reset();
+        document.getElementById('tokens-display').textContent = '0 tokens';
+      }catch(err){
+        console.error('Submit error',err);
+        showFormMessage('Error submitting — try again','error');
+      }finally{
+        submitBtn.disabled = false; submitBtn.textContent = 'Submit Participation';
+      }
+    });
+
+    function showFormMessage(text,type){
+      const node = document.getElementById('form-message');
+      node.innerHTML = `<div class="note-box ${type}">${text}</div>`;
+      setTimeout(()=>{ node.innerHTML = '' },6000);
+    }
+
+    // Load payment info from settings/paymentInfo
+    function loadPaymentInfo(){
+      db.collection('settings').doc('paymentInfo').onSnapshot(doc=>{
+        const el = document.getElementById('payment-details');
+        if(!doc.exists){
+          el.textContent = 'Payment details not configured';
+          cachedSettings = null;
+          return;
         }
+        cachedSettings = doc.data();
+        const owner = cachedSettings.ownerName || 'Owner';
+        const jaz = cachedSettings.jazzcashNumber || 'Not set';
+        el.innerHTML = `<div style="font-weight:800">${owner}</div><div style="margin-top:6px">Pay to: <strong>${jaz}</strong></div>`;
+      }, err=>{ console.error('paymentInfo error',err) });
+    }
 
-        // Tokens calculation
-        document.getElementById('amount').addEventListener('input', function() {
-            const amount = parseInt(this.value) || 0;
-            const tokens = Math.floor(amount / 250);
-            document.getElementById('tokens-display').textContent = `${tokens} tokens`;
+    // masked phone helper (show first 3 and last 2, middle replaced)
+    function maskPhone(p){
+      if(!p) return '—';
+      const s = p.toString();
+      if(s.length <=5) return s;
+      const first = s.slice(0,3);
+      const last = s.slice(-2);
+      return `${first}****${last}`;
+    }
+
+    // load participants list (admin view) + approved box (public)
+    function loadParticipants(){
+      const adminList = document.getElementById('participants-list');
+      adminList.innerHTML = 'Loading...';
+      const approvedBox = document.getElementById('approved-list');
+      approvedBox.innerHTML = 'Loading verified participants...';
+
+      db.collection('participants').orderBy('createdAt','desc').onSnapshot(snapshot=>{
+        // admin list
+        adminList.innerHTML = '';
+        snapshot.forEach(doc=>{
+          const d = doc.data();
+          const id = doc.id;
+          const status = d.status || 'pending';
+          const container = document.createElement('div');
+          container.style.marginBottom = '8px';
+          container.style.padding = '8px';
+          container.style.borderRadius = '8px';
+          container.style.background = 'rgba(255,255,255,0.02)';
+          container.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:800">${d.name||'—'}</div>
+                <div class="small">📞 ${d.phone||'—'} | PKR ${d.amount||0} | ${d.tokens||0} tokens</div>
+                <div class="small">TX: ${d.txId||'—'} | <strong>${(status||'pending').toUpperCase()}</strong></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                ${d.status === 'pending' ? `<button class="btn btn-primary" onclick="updateParticipantStatus('${id}','approved')">Approve</button>
+                <button class="btn" style="background:#ff6b6b;color:#fff" onclick="updateParticipantStatus('${id}','rejected')">Reject</button>` : `<div class="badge verified"> ${d.status} </div>`}
+              </div>
+            </div>
+          `;
+          adminList.appendChild(container);
         });
 
-        // Participate form submit
-        document.getElementById('participate-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const submitBtn = document.getElementById('submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-
-            const formData = {
-                name: document.getElementById('name').value.trim(),
-                phone: document.getElementById('phone').value.trim(),
-                amount: parseInt(document.getElementById('amount').value) || 0,
-                txId: document.getElementById('txId').value.trim(),
-                tokens: Math.floor((parseInt(document.getElementById('amount').value) || 0) / 250),
-                status: 'pending',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
-            if (!formData.name || !formData.phone || !formData.amount || !formData.txId) {
-                showMessage('Please fill all required fields', 'error');
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Participation';
-                return;
+        // approved participants (for public box)
+        db.collection('participants').where('status','==','approved').orderBy('createdAt','desc').limit(10).get()
+          .then(snap=>{
+            approvedBox.innerHTML = '';
+            if(snap.empty){
+              approvedBox.innerHTML = '<div class="small">No verified participants yet</div>';
+              return;
             }
-
-            if (formData.amount < 250) {
-                showMessage('Minimum amount is PKR 250', 'error');
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Participation';
-                return;
-            }
-
-            try {
-                await db.collection('participants').add(formData);
-                showMessage('Participation submitted successfully! We will verify your payment soon.', 'success');
-                document.getElementById('participate-form').reset();
-                document.getElementById('tokens-display').textContent = '0 tokens';
-            } catch (error) {
-                console.error('Error submitting:', error);
-                showMessage('Error submitting form. Please try again.', 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Participation';
-            }
-        });
-
-        function showMessage(text, type) {
-            const messageDiv = document.getElementById('form-message');
-            messageDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
-            setTimeout(() => { messageDiv.innerHTML = ''; }, 5000);
-        }
-
-        // Load payment info (visible to participants)
-        function loadPaymentInfo() {
-            db.collection('settings').doc('paymentInfo')
-              .onSnapshot(doc => {
-                const detailsDiv = document.getElementById('payment-details');
-                if (doc.exists) {
-                    const data = doc.data();
-                    detailsDiv.innerHTML = `
-                        <div style="font-size:1.2rem; margin-bottom:10px;">${data.ownerName || 'Owner'}</div>
-                        <div style="font-size:1.1rem;">JazzCash: ${data.jazzcashNumber || 'Not set'}</div>
-                    `;
-                } else {
-                    detailsDiv.innerHTML = 'Payment details not configured';
-                }
-              }, err => {
-                console.error('Error loading payment info:', err);
-                document.getElementById('payment-details').innerText = 'Error loading payment details';
-              });
-        }
-
-        // Admin authentication (robust checks + helpful console logs)
-        function authenticateAdmin() {
-            const password = (document.getElementById('admin-password').value || '').trim();
-
-            db.collection('settings').doc('paymentInfo').get()
-              .then(doc => {
-                if (!doc.exists) {
-                    alert('Settings document not found! Create collection "settings" and document "paymentInfo" in Firestore.');
-                    console.error('paymentInfo missing');
-                    return;
-                }
-
-                const settings = doc.data();
-                console.info('Fetched paymentInfo:', settings);
-
-                if (!settings.hasOwnProperty('adminPasswordHash')) {
-                    alert('adminPasswordHash field missing in paymentInfo document. Add it in Firebase (exact field name).');
-                    console.error('adminPasswordHash missing in paymentInfo:', settings);
-                    return;
-                }
-
-                // Compare trimmed strings
-                if ((settings.adminPasswordHash + '').trim() === password) {
-                    isAdminAuthenticated = true;
-                    document.getElementById('admin-auth').style.display = 'none';
-                    document.getElementById('admin-panel').style.display = 'block';
-                    loadAdminPanel();
-                } else {
-                    alert('Invalid password. Make sure it exactly matches the value in Firebase (case & whitespace sensitive).');
-                    console.warn('Password mismatch. Entered:', password);
-                }
-              })
-              .catch(err => {
-                console.error('Error fetching paymentInfo:', err);
-                alert('Error checking admin password — see console for details.');
-              });
-        }
-
-        // Load admin panel (only when authenticated)
-        function loadAdminPanel() {
-            if (!isAdminAuthenticated) return;
-            loadPaymentSettings();
-            loadParticipants();
-            loadStats();
-        }
-
-        // Load settings into admin inputs
-        function loadPaymentSettings() {
-            db.collection('settings').doc('paymentInfo').get().then(doc => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    document.getElementById('jazzcash-number').value = data.jazzcashNumber || '';
-                    document.getElementById('owner-name').value = data.ownerName || '';
-                }
-            }).catch(err => console.error('Error loading payment settings:', err));
-        }
-
-        // Update settings (admin)
-        function updatePaymentSettings() {
-            const updates = {
-                jazzcashNumber: document.getElementById('jazzcash-number').value.trim(),
-                ownerName: document.getElementById('owner-name').value.trim()
-            };
-            db.collection('settings').doc('paymentInfo').set(updates, { merge: true })
-              .then(() => { alert('Settings updated successfully'); })
-              .catch(error => { alert('Error updating settings: ' + error); console.error(error); });
-        }
-
-        // Participants realtime list
-        function loadParticipants() {
-            db.collection('participants').orderBy('createdAt', 'desc')
-              .onSnapshot(snapshot => {
-                const listDiv = document.getElementById('participants-list');
-                listDiv.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const item = document.createElement('div');
-                    item.className = 'participant-item';
-                    item.innerHTML = `
-                        <div class="participant-info">
-                            <h4>${data.name || '—'}</h4>
-                            <div class="participant-meta">📞 ${data.phone || '—'} | 💰 PKR ${data.amount || 0} | 🪙 ${data.tokens || 0} tokens</div>
-                            <div class="participant-meta">TX: ${data.txId || '—'} | <span class="status-${data.status}">${(data.status || 'pending').toUpperCase()}</span></div>
-                        </div>
-                        <div class="participant-actions">
-                            ${data.status === 'pending' ? `
-                                <button class="btn btn-approve" onclick="updateParticipantStatus('${doc.id}', 'approved')">Approve</button>
-                                <button class="btn btn-reject" onclick="updateParticipantStatus('${doc.id}', 'rejected')">Reject</button>
-                            ` : ''}
-                        </div>
-                    `;
-                    listDiv.appendChild(item);
-                });
-
-                if (snapshot.empty) {
-                    listDiv.innerHTML = '<div class="participant-item">No participants found</div>';
-                }
-              }, err => {
-                console.error('Error loading participants:', err);
-                document.getElementById('participants-list').innerText = 'Error loading participants';
-              });
-        }
-
-        // Update participant status
-        function updateParticipantStatus(docId, status) {
-            db.collection('participants').doc(docId).update({ status }).catch(err => {
-                console.error('Error updating status:', err);
-                alert('Error updating participant status');
+            snap.forEach(doc=>{
+              const d = doc.data();
+              const item = document.createElement('div');
+              item.className = 'approved-item';
+              item.innerHTML = `<div style="font-weight:800">${d.name||'—'}</div>
+                <div class="small">${maskPhone(d.phone)} | ${d.tokens||0} tokens</div>
+              `;
+              approvedBox.appendChild(item);
             });
-        }
+          })
+          .catch(err=>{ console.error('approved get err',err); approvedBox.innerHTML = 'Error loading verified participants' });
+      }, err=>{ console.error('participants onSnapshot err',err); adminList.innerHTML = 'Error loading participants' });
+    }
 
-        // Stats
-        function loadStats() {
-            db.collection('participants').where('status', '==', 'approved')
-              .onSnapshot(snapshot => {
-                let totalTokens = 0;
-                let totalRevenue = 0;
-                snapshot.forEach(doc => {
-                    const d = doc.data();
-                    totalTokens += d.tokens || 0;
-                    totalRevenue += d.amount || 0;
-                });
-                document.getElementById('total-tokens').textContent = totalTokens;
-                document.getElementById('total-revenue').textContent = totalRevenue.toLocaleString();
-              }, err => console.error('Error loading stats:', err));
-        }
+    // update participant status
+    function updateParticipantStatus(docId,status){
+      db.collection('participants').doc(docId).update({ status }).catch(err=>{
+        console.error('status update err',err);
+        alert('Error updating status');
+      });
+    }
 
-        // Init
-        document.addEventListener('DOMContentLoaded', function() {
-            loadPaymentInfo();
-
-            // Quick debug: check paymentInfo doc exists and log it
-            db.collection('settings').doc('paymentInfo').get()
-              .then(doc => {
-                if (!doc.exists) {
-                    console.warn('paymentInfo document not found in Firestore. Create settings/paymentInfo and add adminPasswordHash field.');
-                } else {
-                    console.info('paymentInfo (on load):', doc.data());
-                }
-              }).catch(err => console.error('Error checking paymentInfo on load:', err));
+    // load stats (approved)
+    function loadStats(){
+      db.collection('participants').where('status','==','approved').onSnapshot(snap=>{
+        let totalTokens = 0, totalRevenue = 0;
+        snap.forEach(doc=>{
+          const d = doc.data();
+          totalTokens += d.tokens || 0;
+          totalRevenue += d.amount || 0;
         });
-    </script>
+        document.getElementById('total-tokens').textContent = totalTokens;
+        document.getElementById('total-revenue').textContent = totalRevenue.toLocaleString();
+      }, err=>{ console.error('stats err',err) });
+    }
+
+    // Update payment settings (admin)
+    document.getElementById('update-settings-btn').addEventListener('click', ()=>{
+      const updates = {
+        jazzcashNumber: document.getElementById('jazzcash-number').value.trim(),
+        ownerName: document.getElementById('owner-name').value.trim()
+      };
+      db.collection('settings').doc('paymentInfo').set(updates,{merge:true})
+        .then(()=>alert('Settings updated'))
+        .catch(err=>{console.error('settings update err',err);alert('Error updating settings')});
+    });
+
+    // Admin login button (client-side check, uses paymentInfo.adminPasswordHash)
+    document.getElementById('admin-login-btn').addEventListener('click', async ()=>{
+      const pw = (document.getElementById('admin-password').value || '').trim();
+      try{
+        const doc = await db.collection('settings').doc('paymentInfo').get();
+        if(!doc.exists){ alert('Settings not configured in Firestore'); return; }
+        const s = doc.data();
+        // default accept '123456' if adminPasswordHash absent (for convenience), else compare exact
+        const expected = (s.adminPasswordHash || '').toString().trim();
+        if(expected){
+          if(expected === pw){
+            isAdminAuthenticated = true;
+          } else {
+            alert('Invalid password');
+            return;
+          }
+        } else {
+          // if field missing, allow '123456' (only temporary)
+          if(pw === '123456'){ isAdminAuthenticated = true; }
+          else { alert('Invalid password'); return; }
+        }
+        // show admin panel
+        document.getElementById('admin-panel').style.display = 'block';
+        // populate settings fields
+        document.getElementById('jazzcash-number').value = s.jazzcashNumber || '';
+        document.getElementById('owner-name').value = s.ownerName || '';
+        loadParticipants(); loadStats();
+      }catch(err){ console.error('admin login err',err); alert('Error during admin login') }
+    });
+
+    // Refresh button (password-protected): will force reload approved list
+    document.getElementById('refresh-btn').addEventListener('click', async ()=>{
+      const pw = (document.getElementById('refresh-password').value || '').trim();
+      // prefer checking against cachedSettings; if not cached, fetch
+      let expected = '';
+      if(cachedSettings && cachedSettings.adminPasswordHash) expected = (cachedSettings.adminPasswordHash||'').toString().trim();
+      if(!expected){
+        try{
+          const doc = await db.collection('settings').doc('paymentInfo').get();
+          if(doc.exists) expected = (doc.data().adminPasswordHash||'').toString().trim();
+        }catch(err){ console.error('refresh pwd fetch err',err) }
+      }
+      // allow fallback secret 123456 if nothing in DB
+      if(expected){
+        if(pw !== expected){ alert('Invalid password'); return; }
+      } else {
+        if(pw !== '123456'){ alert('Invalid password'); return; }
+      }
+      // if passed, reload approved participants once
+      reloadApprovedOnce();
+      alert('Verified participants refreshed');
+    });
+
+    // reload approved participants once (used by refresh)
+    function reloadApprovedOnce(){
+      const approvedBox = document.getElementById('approved-list');
+      approvedBox.innerHTML = 'Refreshing…';
+      db.collection('participants').where('status','==','approved').orderBy('createdAt','desc').limit(10).get()
+        .then(snap=>{
+          approvedBox.innerHTML = '';
+          if(snap.empty){ approvedBox.innerHTML = '<div class="small">No verified participants yet</div>'; return; }
+          snap.forEach(doc=>{
+            const d = doc.data();
+            const item = document.createElement('div');
+            item.className = 'approved-item';
+            item.innerHTML = `<div style="font-weight:800">${d.name||'—'}</div>
+              <div class="small">${maskPhone(d.phone)} | ${d.tokens||0} tokens</div>`;
+            approvedBox.appendChild(item);
+          });
+        }).catch(err=>{ console.error('reload approved err',err); approvedBox.innerHTML = 'Error loading verified participants' });
+    }
+
+    // init: load payment info + participants list (public approved box)
+    document.addEventListener('DOMContentLoaded', ()=>{
+      loadPaymentInfo();
+      // initial public approved box
+      db.collection('participants').where('status','==','approved').orderBy('createdAt','desc').limit(10).get()
+        .then(snap=>{
+          const approvedBox = document.getElementById('approved-list');
+          approvedBox.innerHTML = '';
+          if(snap.empty){ approvedBox.innerHTML = '<div class="small">No verified participants yet</div>'; return; }
+          snap.forEach(doc=>{
+            const d = doc.data();
+            const item = document.createElement('div');
+            item.className = 'approved-item';
+            item.innerHTML = `<div style="font-weight:800">${d.name||'—'}</div>
+              <div class="small">${maskPhone(d.phone)} | ${d.tokens||0} tokens</div>`;
+            approvedBox.appendChild(item);
+          });
+        }).catch(err=>{ console.error('init approved err',err); document.getElementById('approved-list').innerHTML = 'Error loading verified participants' });
+    });
+  </script>
 </body>
 </html>
